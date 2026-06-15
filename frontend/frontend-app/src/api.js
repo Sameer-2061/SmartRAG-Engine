@@ -1,7 +1,7 @@
 // export default API;
 import axios from "axios";
 
-const API = axios.create({ baseURL: "http://127.0.0.1:5000/api" });
+const API = axios.create({ baseURL: "https://smartrag-engine.onrender.com/api" });
 
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
