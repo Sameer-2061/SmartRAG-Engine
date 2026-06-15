@@ -1,0 +1,13 @@
+# Ignore Environment Variables (CRITICAL)
+**/.env
+
+# Ignore Node Dependencies
+**/node_modules
+
+# Ignore Build/Logs
+dist/
+build/
+*.log
+
+# Ignore Local Python Testing Environment (Not needed for GitHub)
+ai-service/
