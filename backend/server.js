@@ -16,7 +16,7 @@ const pdf = (typeof pdfParseLib === 'function') ? pdfParseLib : (pdfParseLib.def
 const mammoth = require("mammoth");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const { cosineSimilarity } = require("./utils/mathUtils");
+const { cosineSimilarity } = require("./Utils/mathUtils");
 const Chunk = require("./models/Chunk");
 const Chat = require("./models/Chat");
 
