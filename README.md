@@ -1,69 +1,82 @@
-# RAG Chatbot — Full-Stack (MERN + AI)
+#  SmartRAG Engine: Advanced Document Intelligence + MERN
 
-An upgraded version of my chatbot project: upload documents (txt/pdf/docx),
-then ask questions answered using ONLY your documents (Retrieval-Augmented
-Generation), with user login and chat history.
+![Live Deployment](https://img.shields.io/badge/Status-Live-success?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/MERN-Vite_React_|_Node.js_|_Express_|_MongoDB-blue?style=for-the-badge)
+![AI](https://img.shields.io/badge/AI-Google_Gemini_1.5-orange?style=for-the-badge)
 
-## Architecture
+A production-grade Retrieval-Augmented Generation (RAG) system built to chat with large documents accurately. It extracts text, generates mathematical vector embeddings, and uses custom algorithms to retrieve precise context, eliminating AI hallucinations.
 
-```
-[React frontend]  --HTTP-->  [Node + Express backend]  --HTTP-->  [Python FastAPI AI service]
-   login/chat UI            JWT auth + API gateway              chunking + embeddings + RAG
-                                     |                                      |
-                                     +-------------- MongoDB ---------------+
-                                          (users, document chunks, chats)
-```
+###  Live Links
+* **Frontend Application:** [https://smart-rag-engine.vercel.app](https://smart-rag-engine.vercel.app)
+* **Backend API:** `https://smartrag-engine.onrender.com/api`
 
-**Why two backends?** The AI/RAG logic lives in Python (sentence-transformers,
-AI21). MERN's backend is Node. So Python runs as a separate microservice that
-Node calls. This is a clean, real-world separation — and a strong interview point.
+---
 
-## Tech stack
-- **Frontend:** React
-- **Backend:** Node + Express, JWT auth, bcrypt
-- **AI service:** Python, FastAPI, sentence-transformers, AI21 (jamba-large)
-- **Database:** MongoDB
-- **RAG:** document chunking + vector similarity retrieval + LLM answer
+## 💡 Real-World Applications (Use Cases)
+* **Legal & Compliance:** Lawyers can instantly query 100-page contracts to find specific clauses without reading the whole document.
+* **Academic Research & Study:** Students can upload dense research papers or textbooks and ask for concept breakdowns or summaries.
+* **HR & Corporate Onboarding:** Employees can chat with company policy PDFs to quickly find information about leaves, benefits, or IT rules.
+* **Financial Analysis:** Extracting specific revenue data or risk factors from massive annual reports.
 
-## Setup
+---
 
-### 0. Prerequisites
-- Node.js, Python 3.x, MongoDB running locally
-- An AI21 API key
+## 🛠️ Technical Architecture & Stack
 
-### 1. AI service (Python)
-```bash
-cd ai-service
-python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-echo "AI21_API_KEY=your_key_here" > .env
-echo "MONGO_URI=mongodb://localhost:27017" >> .env
-uvicorn main:app --reload --port 8000
-```
+**Frontend (Client)**
+* **React (Vite):** Fast, modern UI rendering.
+* **Axios:** For seamless API communication.
+* **CSS:** Clean, responsive, and distraction-free user interface.
+* **Deployment:** Vercel
 
-### 2. Backend (Node)
-```bash
+**Backend (Server & Logic)**
+* **Node.js & Express.js:** Robust REST API architecture.
+* **Multer & PDF-Parse:** For handling multipart form data and extracting text from complex PDFs.
+* **Google Gemini API (`@google/generative-ai`):** Utilized for both generating text embeddings and the final LLM response.
+* **Deployment:** Render
+
+**Database**
+* **MongoDB Atlas & Mongoose:** Storing user credentials, document metadata, and high-dimensional vector embeddings efficiently.
+
+---
+
+## Key Learnings & Engineering Decisions
+
+Building this project taught me how to bridge the gap between simple web development and core software engineering:
+
+1. **Algorithmic Problem Solving in System Design:** Instead of relying on expensive, black-box vector databases right away, I implemented the **Cosine Similarity algorithm** from scratch in JavaScript. This deepened my understanding of how data structures and mathematical vectors interact in high-level applications.
+2. **Dynamic Load Balancing & Fallbacks:** I implemented a defensive fallback mechanism. If the primary `gemini-1.5-pro` model hits a `429 Rate Limit` (Too Many Requests), the backend catches the error and dynamically routes the request to the faster `gemini-1.5-flash` model. This ensures zero downtime and a seamless user experience.
+3. **Handling Asynchronous Heavy Workloads:** Processing large PDFs into hundreds of chunks and generating embeddings for each can block the Node.js event loop. I learned to optimize `Promise.all()` and handle batch processing efficiently.
+4. **Cross-Platform Deployment complexities:** Successfully managing a Monorepo, configuring environment variables securely across Vercel and Render, and fixing Linux/Windows case-sensitivity bugs during deployment.
+
+---
+
+## Future Scope & Improvements
+* **Integration of a Native Vector DB:** Migrating the vector storage from MongoDB to a dedicated Vector Database like Pinecone or Weaviate for lightning-fast semantic search at massive scale.
+* **Persistent Chat Memory:** Implementing conversation history so the LLM remembers previous questions within the same session.
+* **OCR Support:** Integrating Tesseract.js or a vision model to extract and chat with text from scanned images and un-selectable PDFs.
+* **Caching Layer:** Adding Redis to cache frequent queries and reduce API calls to the LLM.
+
+---
+
+##  Run Locally
+
+**1. Clone the repository**
+\`\`\`bash
+git clone https://github.com/Sameer-2061/SmartRAG-Engine.git
+cd SmartRAG-Engine
+\`\`\`
+
+**2. Setup Backend**
+\`\`\`bash
 cd backend
 npm install
-cp .env.example .env        # then edit JWT_SECRET
+# Create a .env file and add: GEMINI_API_KEY, MONGO_URI, and JWT_SECRET
 node server.js
-```
+\`\`\`
 
-### 3. Frontend (React)
-```bash
-npm create vite@latest frontend-app -- --template react
-# copy the files from frontend/src/ into frontend-app/src/
-cd frontend-app && npm install axios && npm run dev
-```
-
-## How to use
-1. Sign up / log in.
-2. Upload a document (e.g. doc1.txt / doc2.txt).
-3. Ask a question — the bot answers from your document and shows the source file.
-
-## What improved vs the original scripts
-- Proper **chunking** of documents (was: whole-file embeddings).
-- Embeddings computed **once at upload** (was: re-encoded on every question).
-- **Real RAG answers** from the LLM (was: truncated raw text).
-- Added **React frontend**, **JWT auth**, and a clean **API gateway**.
-- Per-user document isolation (each user only queries their own files).
+**3. Setup Frontend**
+\`\`\`bash
+cd ../frontend/frontend-app
+npm install
+npm run dev
+\`\`\`
